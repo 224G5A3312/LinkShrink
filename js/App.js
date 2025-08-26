@@ -207,7 +207,7 @@ shortenBtn.addEventListener('click', async () => {
             userId: user.uid,
             clicks: 0
         });
-        const shortUrl = `${window.location.origin}/${shortCode}`;
+        const shortUrl = `${window.location.origin}/r/${shortCode}`;
         shortenedUrlInput.value = shortUrl;
         resultSection.style.display = 'block';
     } catch (e) {

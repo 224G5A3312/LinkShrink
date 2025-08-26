@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <style>
+    body { display:flex; align-items:center; justify-content:center; min-height:100vh; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:#0f1115; color:#cfd3dc; }
+    .box { text-align:center; }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyAETwB5rF3kUAkspDVc-UijfZF0nGmAuTU",
+      authDomain: "linkshrink-f36fc.firebaseapp.com",
+      projectId: "linkshrink-f36fc",
+      storageBucket: "linkshrink-f36fc.appspot.com",
+      messagingSenderId: "410472805917",
+      appId: "1:410472805917:web:aaf70b2334d55785ed38f4",
+      measurementId: "G-DY6BQ6YLL3"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    (async () => {
+      try {
+        const code = location.pathname.replace(/^\/r\//, '').replace(/\/+$/, '');
+        if (!code) { location.replace('/'); return; }
+        const urlsQuery = query(collection(db, 'urls'), where('shortCode', '==', code));
+        const snap = await getDocs(urlsQuery);
+        if (!snap.empty) {
+          const docSnap = snap.docs[0];
+          const dest = docSnap.data().longUrl;
+          try { await updateDoc(docSnap.ref, { clicks: increment(1) }); } catch {}
+          if (dest) { location.replace(dest); return; }
+        }
+        document.getElementById('msg').textContent = 'Link not found.';
+        setTimeout(() => location.replace('/'), 1500);
+      } catch (e) {
+        document.getElementById('msg').textContent = 'Error. Redirecting to home...';
+        setTimeout(() => location.replace('/'), 1500);
+      }
+    })();
+  </script>
+</head>
+<body>
+  <div class="box">
+    <h1 id="msg">Redirecting…</h1>
+  </div>
+</body>
+</html>
+
+
