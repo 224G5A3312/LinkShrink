@@ -9,7 +9,7 @@ import {
     signInWithEmailAndPassword,
     sendPasswordResetEmail // <-- ADDED
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // --- HTML Element Selection ---
 const shortenBtn = document.getElementById('shortenBtn');
@@ -265,3 +265,38 @@ copyBtn.addEventListener('click', () => {
         showNotification("Failed to copy URL.", "LinkShrink");
     }
 });
+
+// --- Client-side Redirect Handler for Netlify ---
+(async function handleIncomingShortLinkRedirect() {
+    try {
+        const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+        if (!path) { return; }
+
+        // Skip known app routes if any are added in the future
+        const nonShortRoutes = new Set(['login', 'signup']);
+        if (nonShortRoutes.has(path)) { return; }
+
+        const shortCode = path;
+        const urlsQuery = query(collection(db, 'urls'), where('shortCode', '==', shortCode));
+        const snapshot = await getDocs(urlsQuery);
+
+        if (!snapshot.empty) {
+            const docSnap = snapshot.docs[0];
+            const data = docSnap.data();
+            const destination = data.longUrl;
+
+            // Best effort click increment (ignore failures)
+            try { await updateDoc(docSnap.ref, { clicks: increment(1) }); } catch (_) {}
+
+            if (destination) {
+                window.location.replace(destination);
+                return;
+            }
+        }
+
+        // If we reach here, the short code wasn't found
+        showNotification('This link was not found. Please check the URL.', 'LinkShrink');
+    } catch (error) {
+        console.error('Redirect handler error:', error);
+    }
+})();
