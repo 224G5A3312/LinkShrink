@@ -6,7 +6,8 @@ import {
     onAuthStateChanged, 
     signOut,
     createUserWithEmailAndPassword,
-    signInWithEmailAndPassword
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail // <-- ADDED
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
@@ -88,6 +89,31 @@ googleLoginBtn.addEventListener('click', () => {
             showNotification("Could not sign in with Google. Please try again.", "LinkShrink");
         });
 });
+
+// --- NEW BLOCK FOR FORGOT PASSWORD ---
+const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+forgotPasswordLink.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent the link from navigating
+
+    const email = loginForm.loginEmail.value;
+
+    if (!email) {
+        showNotification("Please enter your email address in the email field first, then click 'Forgot password?'.", "LinkShrink");
+        return;
+    }
+
+    sendPasswordResetEmail(auth, email)
+        .then(() => {
+            loginModal.hide();
+            showNotification("Password reset email sent! Please check your inbox.", "LinkShrink");
+        })
+        .catch((error) => {
+            console.error("Password Reset Error:", error);
+            showNotification("Could not send reset email. Please ensure the email address is correct and registered.", "LinkShrink");
+        });
+});
+// --- END OF NEW BLOCK ---
 
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
