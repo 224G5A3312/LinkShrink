@@ -1,26 +1,7 @@
-# LinkShrink — Bootstrap Theme (HTML/CSS/JS + Firebase)
-**Modern UI** with Bootstrap 5 + custom theme. Firebase handles Auth + Firestore.
+LinkShrink
 
-## Features
-- Login/Signup (Email & Password)
-- Shorten links → `/r/{code}` redirects
-- Click analytics + chart
-- QR generator
+LinkShrink is a URL shortening system designed to transform long web addresses into concise and shareable links while maintaining reliability and ease of access. The project leverages modern web technologies to provide a responsive and user-friendly interface for link management. The system consists of four core components: a user interface for interaction, a shortening mechanism to generate unique and compact URLs, a database to store mappings between original and shortened links, and an authentication system to secure access and track individual user activity.
 
-## Setup
-1) Create Firebase project and enable **Auth (Email/Password)** + **Firestore** + **Hosting**.
-2) Put your config in `js/firebase.js` (replace placeholders).
-3) Local preview with any server:
-```
-npx serve .
-# or
-python -m http.server 8000
-```
-4) Deploy to Firebase Hosting. `firebase.json`:
-```json
-{ "hosting": { "public": ".", "ignore": ["firebase.json","**/.*","**/node_modules/**"], "rewrites": [{ "source": "/r/**", "destination": "/redirect.html" }] } }
-```
+Implementation involves building the frontend using HTML, CSS, Bootstrap, and JavaScript to create a clean and interactive design, integrating Firebase Authentication for user login and signup, and connecting Firestore for secure storage of link data. The shortening mechanism is handled through JavaScript logic that maps long URLs to shorter unique codes, which are then stored and retrieved from the database. Hosting is managed through Netlify, enabling quick deployment and accessibility of the platform.
 
-## Collections
-- `links/{code}`: { code, longUrl, uid, createdAt, clickCount }
-- `links/{code}/clicks/{event}`: { ts, ua }
+This approach provides a lightweight yet effective solution for URL shortening, combining ease of use with backend integration for data management. The system enhances usability through a modern web interface, while also allowing scalability for additional features such as analytics and link tracking.
