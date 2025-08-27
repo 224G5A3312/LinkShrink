@@ -1,4 +1,4 @@
-# LinkShrink
+# LinkShrink - URL Shortening Analytics 
 
 LinkShrink is a URL shortening system designed to transform long web addresses into concise and shareable links while maintaining reliability and ease of access. The project leverages modern web technologies to provide a responsive and user-friendly interface for link management. The system consists of four core components: a user interface for interaction, a shortening mechanism to generate unique and compact URLs, a database to store mappings between original and shortened links, and an authentication system to secure access and track individual user activity.
 
