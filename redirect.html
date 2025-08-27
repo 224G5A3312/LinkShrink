@@ -27,28 +27,37 @@
       try {
         const code = location.pathname.replace(/^\/r\//, '').replace(/\/+$/, '');
         if (!code) { location.replace('/'); return; }
+        
         const urlsQuery = query(collection(db, 'urls'), where('shortCode', '==', code));
         const snap = await getDocs(urlsQuery);
+        
         if (!snap.empty) {
           const docSnap = snap.docs[0];
           const dest = docSnap.data().longUrl;
-          try { await updateDoc(docSnap.ref, { clicks: increment(1) }); } catch {}
-          if (dest) { location.replace(dest); return; }
+          
+          // Increment clicks in background (don't wait)
+          updateDoc(docSnap.ref, { clicks: increment(1) }).catch(() => {});
+          
+          // Redirect immediately if destination found
+          if (dest) { 
+            location.replace(dest); 
+            return; 
+          }
         }
+        
+        // Only show message if no redirect happened
         document.getElementById('msg').textContent = 'Link not found.';
-        setTimeout(() => location.replace('/'), 1500);
+        setTimeout(() => location.replace('/'), 1000);
       } catch (e) {
         document.getElementById('msg').textContent = 'Error. Redirecting to home...';
-        setTimeout(() => location.replace('/'), 1500);
+        setTimeout(() => location.replace('/'), 1000);
       }
     })();
   </script>
 </head>
 <body>
   <div class="box">
-    <h1 id="msg">Redirecting…</h1>
+    <h1 id="msg">Loading...</h1>
   </div>
 </body>
 </html>
-
-
